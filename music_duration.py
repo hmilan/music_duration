@@ -12,16 +12,18 @@ def get_info(inf,funstuff,pattern,qbitrate):
         for nm in files:
             if fnmatch.fnmatch(nm.casefold(),pattern):
                 try:
-                    #DBG1:print("current file is: ",os.path.join(root,nm),end="\r")
+                    #if verbose: print("current file is: ",os.path.join(root,nm),end="\r")
+                    if verbose: print(num_files," current file is:",os.path.join(root,nm),end="")
                     audio=funstuff(os.path.join(root,nm))
                     samplerate=audio.info.sample_rate
                     if qbitrate: biterate=audio.info.bitrate
                     durate += audio.info.length
                     num_files += 1
+                    if verbose: print(' {0:8.2f}s'.format(audio.info.length))
                 except:
-                    #DBG2:print("problem file is: ",os.path.join(root,nm))
+                    if verbose: print("problem file is: ",os.path.join(root,nm))
                     continue
-    #DBG1:print("                                                             ",end="\r")
+    if verbose: print("                                                             ",end="\r")
     return durate, num_files
 
 def out_time(num,nam,out):
@@ -40,8 +42,15 @@ def print_info(duration,numb,tag):
 
 
 start_name='.'
-if len(sys.argv) < 2 : print(sys.argv[0]+" version 1.0: Starting from current folder!")
-else: start_name=sys.argv[1]
+verbose = False
+# first parse the verbose - position dependent: must be first, otherwise ignored
+num_args=len(sys.argv) ; arg_shift=0
+if num_args > 1 :
+    if sys.argv[1].find('-v') > -1:
+        verbose = True
+        arg_shift=1
+if num_args < 2+arg_shift : print("Starting from current folder!")
+else: start_name=sys.argv[1+arg_shift]
 
 durate_flac,num_files_flac = get_info(start_name,FLAC,'*.flac',False)
 print_info(durate_flac,num_files_flac,'flac')
