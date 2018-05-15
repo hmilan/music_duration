@@ -1,1 +1,2 @@
 implement command options for --help and --verbose, --debug etc..
+-v is implemented as of May 15, 2018 (no --verbose yet)
